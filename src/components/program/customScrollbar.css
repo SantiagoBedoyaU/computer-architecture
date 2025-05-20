@@ -1,0 +1,27 @@
+/* Agrega esto en tu archivo CSS global o en el archivo de estilos */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 8px; /* Ancho del scrollbar */
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: #f1f1f1; /* Fondo del track (donde se mueve el thumb) */
+  border-radius: 10px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #888; /* Color del thumb */
+  border-radius: 10px;
+  transition: background 0.3s ease; /* Suaviza el cambio de color */
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #555; /* Color del thumb al hacer hover */
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:active {
+  background: #333; /* Color del thumb al hacer click */
+}
+
+.custom-scrollbar::-webkit-scrollbar-corner {
+  background: transparent; /* Fondo en la esquina, si hay */
+}
