@@ -9,6 +9,11 @@ type ComputerNodeProps = {
     label: string;
     value: string;
     active: boolean;
+    visible?: boolean;
+    sourceHandleTop?: number;
+    targetHandleTop?: number;
+    sourceHandleSide?: string;
+    targetHandleSide?: string;
   };
 };
 
@@ -28,7 +33,7 @@ export const CPUNode: React.FC<ComputerNodeProps> = ({ data }) => {
     border: `2px solid ${active ? cycleStrokeColors[currentCycle] : "gray"}`,
     position: "relative",
     width: "480px",
-    height: "500px",
+    height: "600px",
   };
 
   return (
@@ -45,6 +50,7 @@ export const PSWNode: React.FC<ComputerNodeProps> = ({ data }) => {
 
   const nodeStyle: React.CSSProperties = {
     ...globalNodeStyle,
+    backgroundColor: `${active ? cycleStrokeColors[currentCycle] : "white"}`,
     border: `2px solid ${active ? cycleStrokeColors[currentCycle] : "gray"}`,
     position: "relative",
     height: "160px",
@@ -66,6 +72,7 @@ export const FlagNode: React.FC<ComputerNodeProps> = ({ data }) => {
   if (label === "ZERO") {
     const nodeStyle: React.CSSProperties = {
       ...globalNodeStyle,
+      backgroundColor: `2px solid ${PSW.zero ? "red" : "green"}`,
       border: `2px solid ${PSW.zero ? "red" : "green"}`,
       position: "relative",
       width: "80px",
@@ -80,6 +87,7 @@ export const FlagNode: React.FC<ComputerNodeProps> = ({ data }) => {
 
   const nodeStyle: React.CSSProperties = {
     ...globalNodeStyle,
+    backgroundColor: `2px solid ${PSW.nan ? "red" : "green"}`,
     border: `2px solid ${PSW.nan ? "red" : "green"}`,
     position: "relative",
     width: "80px",
@@ -100,7 +108,11 @@ export const ALUComponent: React.FC<ComputerNodeProps> = ({ data }) => {
   if (label === "A") {
     const nodeStyle: React.CSSProperties = {
       ...globalNodeStyle,
-      width: "80px",
+      width: "170px",
+      display: "flex",
+      flexDirection: "row",
+
+      justifyContent: "space-between",
     };
 
     return (
@@ -114,7 +126,10 @@ export const ALUComponent: React.FC<ComputerNodeProps> = ({ data }) => {
   if (label === "B") {
     const nodeStyle: React.CSSProperties = {
       ...globalNodeStyle,
-      width: "80px",
+      width: "170px",
+      display: "flex",
+      flexDirection: "row",
+      justifyContent: "space-between",
     };
 
     return (
@@ -127,12 +142,15 @@ export const ALUComponent: React.FC<ComputerNodeProps> = ({ data }) => {
 
   const nodeStyle: React.CSSProperties = {
     ...globalNodeStyle,
-    width: "80px",
+    width: "170px",
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "space-between",
   };
 
   return (
     <div style={nodeStyle}>
-      <strong>{label}</strong>
+      <div>{label}</div>
       <div>{getBinary(ALU.result)}</div>
     </div>
   );
@@ -144,30 +162,35 @@ export const ALUNode: React.FC<ComputerNodeProps> = ({ data }) => {
 
   // Estilos para el contenedor principal de la ALU
   const aluContainerStyle: React.CSSProperties = {
+    border: `2px solid ${active ? cycleStrokeColors[currentCycle] : "gray"}`,
     position: "relative",
     width: "190px",
-    height: "140px",
+    height: "200px",
   };
 
   // Estilo para la forma de la ALU
-  const aluStyle: React.CSSProperties = {
-    width: "100%",
-    height: "100%",
-    backgroundColor: `${active ? cycleStrokeColors[currentCycle] : "gray"}`,
-    clipPath:
-      "polygon(0% 0%, 35% 0%, 50% 30%, 65% 0%, 100% 0%, 100% 60%, 50% 100%, 0% 60%)",
-    position: "relative",
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    justifyContent: "center",
+  // const aluStyle: React.CSSProperties = {
+  //   width: "100%",
+  //   height: "100%",
+  //   backgroundColor: `${active ? cycleStrokeColors[currentCycle] : "white"}`,
+  //   position: "relative",
+  //   display: "flex",
+  //   flexDirection: "column",
+  //   alignItems: "center",
+  //   justifyContent: "center",
+  // };
+
+  const labelStyle: React.CSSProperties = {
+    position: "absolute",
+    top: "8px",
+    left: "50%",
+    transform: "translateX(-50%)",
+    fontWeight: "bold",
   };
 
   return (
     <div style={aluContainerStyle}>
-      <div style={aluStyle}>
-        <strong style={{ marginBottom: "40px" }}>{label}</strong>
-      </div>
+      <div style={labelStyle}>{label}</div>
       <Handle type="source" position={Position.Bottom} id="sourceHandle" />
       <Handle type="target" position={Position.Top} id="targetHandle" />
     </div>
@@ -181,6 +204,7 @@ export const RegisterNode: React.FC<ComputerNodeProps> = ({ data }) => {
   const nodeStyle: React.CSSProperties = {
     ...globalNodeStyle,
     border: `2px solid ${active ? cycleStrokeColors[currentCycle] : "gray"}`,
+    backgroundColor: `${active ? cycleStrokeColors[currentCycle] : "white"}`,
     width: "140px",
     height: "50px",
     display: "flex",
@@ -201,11 +225,14 @@ export const RegisterNode: React.FC<ComputerNodeProps> = ({ data }) => {
 
 export const AddressNode: React.FC<ComputerNodeProps> = ({ data }) => {
   const { currentCycle } = useStore((store) => store.COMPUTER);
-  const { label, value, active } = data;
+  const { label, value, active, visible } = data;
+
+  if (!visible) return null;
 
   const nodeStyle: React.CSSProperties = {
     ...globalNodeStyle,
     border: `2px solid ${active ? cycleStrokeColors[currentCycle] : "gray"}`,
+    backgroundColor: `${active ? cycleStrokeColors[currentCycle] : "white"}`,
     width: "320px",
     height: "48px",
     display: "flex",
@@ -229,7 +256,7 @@ export const RegisterBankNode: React.FC<ComputerNodeProps> = ({ data }) => {
   const nodeStyle: React.CSSProperties = {
     ...globalNodeStyle,
     border: `2px solid ${active ? cycleStrokeColors[currentCycle] : "gray"}`,
-    width: "180px",
+    width: "190px",
     height: "300px",
   };
 
@@ -250,6 +277,8 @@ export const MemoryNode: React.FC<ComputerNodeProps> = ({ data }) => {
     border: `2px solid ${active ? cycleStrokeColors[currentCycle] : "gray"}`,
     width: "360px",
     height: "428px",
+    overflowY: "auto",
+    overflowX: "hidden",
   };
 
   return (
@@ -269,8 +298,8 @@ export const PrincipalMemoryNode: React.FC<ComputerNodeProps> = ({ data }) => {
   const nodeStyle: React.CSSProperties = {
     ...globalNodeStyle,
     border: `2px solid ${active ? cycleStrokeColors[currentCycle] : "gray"}`,
-    width: "820px",
-    height: "500px",
+    width: "420px",
+    height: "940px",
   };
 
   return (
@@ -291,6 +320,7 @@ export const ComputerNode: React.FC<ComputerNodeProps> = ({ data }) => {
 
   const nodeStyle: React.CSSProperties = {
     ...globalNodeStyle,
+    backgroundColor: `${active ? cycleStrokeColors[currentCycle] : "white"}`,
     border: `2px solid ${active ? cycleStrokeColors[currentCycle] : "gray"}`,
   };
 
@@ -313,6 +343,7 @@ export const PCNode: React.FC<ComputerNodeProps> = ({ data }) => {
 
   const nodeStyle: React.CSSProperties = {
     ...globalNodeStyle,
+    backgroundColor: `${active ? cycleStrokeColors[currentCycle] : "white"}`,
     border: `2px solid ${active ? cycleStrokeColors[currentCycle] : "gray"}`,
   };
 
@@ -330,25 +361,53 @@ export const PCNode: React.FC<ComputerNodeProps> = ({ data }) => {
 
 export const BusNode: React.FC<ComputerNodeProps> = ({ data }) => {
   const { currentCycle } = useStore((store) => store.COMPUTER);
-
-  const { label, value, active } = data;
+  const {
+    label,
+    value,
+    active,
+    sourceHandleTop,
+    sourceHandleSide,
+    targetHandleTop,
+    targetHandleSide,
+  } = data;
 
   const nodeStyle: React.CSSProperties = {
     ...globalNodeStyle,
+    backgroundColor: active ? cycleStrokeColors[currentCycle] : "white",
     border: `2px solid ${active ? cycleStrokeColors[currentCycle] : "gray"}`,
-    width: "1320px",
-    height: "60px",
+    width: "100px",
+    height: "940px",
     display: "flex",
     flexDirection: "column",
-    justifyContent: "center",
+    position: "relative",
   };
 
   return (
     <div style={nodeStyle}>
       <strong>{label}</strong>
-      <div>{value}</div>
-      <Handle type="source" position={Position.Bottom} id="sourceHandle" />
-      <Handle type="target" position={Position.Right} id="targetHandle" />
+      <div style={{ marginTop: "auto", marginBottom: "auto" }}>{value}</div>
+
+      {/* Source Handle dinámico */}
+      <Handle
+        type="source"
+        position={sourceHandleSide === "left" ? Position.Left : Position.Right}
+        id="sourceHandle"
+        style={{
+          top: sourceHandleTop ?? 500,
+          [sourceHandleSide ?? "right"]: "0px",
+        }}
+      />
+
+      {/* Target Handle dinámico */}
+      <Handle
+        type="target"
+        position={targetHandleSide === "left" ? Position.Left : Position.Right}
+        id="targetHandle"
+        style={{
+          top: targetHandleTop ?? 200,
+          [targetHandleSide ?? "left"]: "0px",
+        }}
+      />
     </div>
   );
 };

@@ -34,6 +34,13 @@ interface UpdateDataItem {
 }
 
 export interface ProgramSlice {
+  isPaused: boolean;
+  setIsPaused: (paused: boolean) => void;
+  isStepMode: boolean;
+  setIsStepMode: (stepMode: boolean) => void;
+  stepRequested: boolean;
+  requestStep: () => void;
+  clearStepRequest: () => void;
   dataMemory: DataItem[];
   items: ProgramItem[];
   activeItem: ProgramItem | null;
@@ -68,6 +75,15 @@ const createProgramSlice: StateCreator<ProgramSlice> = (set) => ({
   cancelProgram: true,
   isProgamRunning: false,
   throwConfetti: false,
+  isPaused: true,
+  setIsPaused: (isPaused) => set(() => ({ isPaused })),
+
+  isStepMode: false,
+  setIsStepMode: (isStepMode) => set(() => ({ isStepMode })),
+
+  stepRequested: false,
+  requestStep: () => set(() => ({ stepRequested: true })),
+  clearStepRequest: () => set(() => ({ stepRequested: false })),
 
   // Crear un nuevo item y agregarlo al estado
   createItem: ({
@@ -100,7 +116,7 @@ const createProgramSlice: StateCreator<ProgramSlice> = (set) => ({
 
   handleClear: () => {
     set((state) => ({
-      items: []
+      items: [],
     }));
   },
 

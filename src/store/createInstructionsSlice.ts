@@ -90,7 +90,7 @@ const initialInstructions: COMPUTER = {
   currentComponent: "",
   currentCycle: "FI",
   lastComponent: "",
-  timeout: 1000,
+  timeout: 500,
 };
 
 const createInstructionsSlice: StateCreator<InstructionsSlice> = (set) => ({

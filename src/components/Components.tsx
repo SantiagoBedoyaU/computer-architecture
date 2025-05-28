@@ -1,13 +1,19 @@
 import {
   Background,
   Controls,
+  MarkerType,
   ReactFlow,
   useEdgesState,
   useNodesState,
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
 import { useEffect } from "react";
-import { RiCloseFill, RiPlayLargeFill } from "react-icons/ri";
+import {
+  RiCloseFill,
+  RiPauseFill,
+  RiPlayLargeFill,
+  RiSpeedFill,
+} from "react-icons/ri";
 import { initialEdges, initialNodes } from "../data/data";
 import { run } from "../instructions/runProgram";
 import { CODOPS } from "../interfaces/CODOP";
@@ -56,6 +62,7 @@ export const Components = () => {
 
   const cancelProgram = useStore((store) => store.cancelProgram);
   const COMPUTER = useStore((store) => store.COMPUTER);
+  const { PC } = useStore((store) => store.COMPUTER);
   const dataMemory = useStore((store) => store.dataMemory);
   const isProgamRunning = useStore((store) => store.isProgamRunning);
   const items = useStore((store) => store.items);
@@ -145,7 +152,14 @@ export const Components = () => {
         target: COMPUTER.currentComponent ?? edge.target,
         style: {
           ...edge.style,
+          strokeWidth: 4,
           stroke: cycleStrokeColors[COMPUTER.currentCycle],
+          animated: false,
+          type: "default",
+        },
+        markerEnd: {
+          type: MarkerType.ArrowClosed,
+          color: cycleStrokeColors[COMPUTER.currentCycle],
         },
       })),
     );
@@ -190,12 +204,14 @@ export const Components = () => {
       type: "AddressNode",
       position: {
         x: 30,
-        y: index === 0 ? 50 : 50 + index * (NODE_HEIGHT + NODE_MARGIN),
+        y: index === PC ? 50 : 50 + (index - PC) * (NODE_HEIGHT + NODE_MARGIN),
       },
       data: {
         label: getBinary(index),
         value: `${CODOPS[item.codop as keyof typeof CODOPS]} ${getBinary(item.operand1)} ${getBinary(item.operand2)}`,
         active: false,
+        instructionIndex: index,
+        visible: index >= PC && index < PC + 6,
       },
       draggable: false,
       parentId: "PM",
@@ -203,51 +219,111 @@ export const Components = () => {
 
     setNodes(() => [...initialNodes, ...newNodes]);
     setIsProgamRunning(true);
+    useStore.getState().setIsPaused(true); // Empieza pausado
+    useStore.getState().setIsStepMode(true); // Modo paso a paso activo
+    useStore.getState().clearStepRequest(); // Limpia pasos previos
+
     run();
   };
+
+  const handleContinue = () => {
+    useStore.getState().setIsPaused(!useStore.getState().isPaused);
+    if (useStore.getState().isPaused) {
+      useStore.getState().clearStepRequest();
+    } else {
+      useStore.getState().requestStep();
+    }
+  };
+
+  useEffect(() => {
+    const NODE_HEIGHT = 50;
+    const NODE_MARGIN = 10;
+
+    setNodes((prevNodes) =>
+      prevNodes.map((node) => {
+        if (
+          node.parentId === "PM" &&
+          typeof node.data?.instructionIndex === "number"
+        ) {
+          const index = node.data.instructionIndex;
+
+          const newY =
+            index === PC ? 50 : 50 + (index - PC) * (NODE_HEIGHT + NODE_MARGIN);
+
+          return {
+            ...node,
+            position: {
+              ...node.position,
+              y: newY,
+            },
+            data: {
+              ...node.data,
+              visible: index >= PC && index < PC + 6,
+            },
+          };
+        }
+
+        return node;
+      }),
+    );
+  }, [PC]);
 
   const handleCancel = () => {
     setCancelProgram(false);
   };
 
   return (
-    <div className="flex h-[90vh] flex-col">
-      <div className="p-2 rounded-t-lg w-fit bg-stone-500">
-        <h1 className="text-xl font-bold">Computador</h1>
-      </div>
-      <div className="flex flex-col h-full gap-2 p-2 rounded-b-lg rounded-tr-lg bg-stone-500">
-        <SettingsMenu>
-          {!isProgamRunning && (
-            <button
-              className={`bottom-2 flex max-w-[280px] items-center justify-center gap-2 rounded-lg border px-4 py-2 font-medium text-white shadow-md hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-opacity-50 ${isProgamRunning ? "border-gray-600 bg-gray-400" : "border-green-600 bg-[#00ff66]"}`}
-              onClick={handleOnClick}
-              disabled={isProgamRunning}
-            >
-              <RiPlayLargeFill />
-              Ejecutar programa
-            </button>
-          )}
-          {isProgamRunning && (
-            <button
-              className={`bottom-2 flex max-w-[280px] items-center justify-center gap-2 rounded-lg border px-4 py-2 font-medium text-white shadow-md hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-opacity-50 ${!cancelProgram ? "border-gray-600 bg-gray-400" : "border-red-600 bg-red-400"}`}
-              onClick={handleCancel}
-              disabled={!cancelProgram}
-            >
-              {cancelProgram ? (
-                <>
-                  <RiCloseFill />
-                  Cancelar ejecución
-                </>
-              ) : (
-                "Cancelando ejecución"
+    <div className="flex h-[100vh] flex-col items-center bg-gray-300 text-black">
+      <h1 className="text-xl font-bold">Computador</h1>
+      <div className="flex h-full flex-row gap-2 rounded-b-lg rounded-tr-lg p-2">
+        <div className="flox-row flex h-full w-[300px] rounded-md md:w-[800px]">
+          <SettingsMenu>
+            <div className="flex flex-col items-center gap-2">
+              {!isProgamRunning && (
+                <button
+                  className="bottom-2 flex max-w-[280px] items-center justify-center gap-2 rounded-lg bg-[#00ff66] px-4 py-2 font-medium text-white shadow-md hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-opacity-50"
+                  onClick={handleOnClick}
+                >
+                  <RiPlayLargeFill />
+                </button>
               )}
-            </button>
-          )}
-        </SettingsMenu>
 
-        <div className="h-full w-[300px] rounded-md md:w-[800px]">
+              {isProgamRunning && (
+                <div className="flex flex-col gap-2">
+                  <button
+                    className="flex items-center justify-center gap-2 rounded-lg bg-green-500 px-4 py-2 text-white"
+                    onClick={handleContinue}
+                  >
+                    {useStore.getState().isPaused ? (
+                      <>
+                        <RiPlayLargeFill />
+                      </>
+                    ) : (
+                      <>
+                        <RiPauseFill />
+                      </>
+                    )}
+                  </button>
+
+                  <button
+                    className="flex items-center justify-center gap-2 rounded-lg bg-blue-500 px-4 py-2 text-white"
+                    onClick={useStore.getState().requestStep}
+                  >
+                    <RiSpeedFill />
+                  </button>
+
+                  <button
+                    className="flex items-center justify-center gap-2 rounded-lg bg-red-500 px-4 py-2 text-white"
+                    onClick={handleCancel}
+                  >
+                    <RiCloseFill />
+                  </button>
+                </div>
+              )}
+            </div>
+          </SettingsMenu>
           <ReactFlow
-            className="bg-[#2f2f2f]"
+            className="w-full bg-white"
             nodes={nodes}
             edges={edges}
             onNodesChange={onNodesChange}

@@ -1,12 +1,30 @@
 import useStore from "../store/useStore";
 
-export const functionTime = (thisfunction: () => void) => {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      thisfunction();
-      resolve(true);
-    }, useStore.getState().COMPUTER.timeout);
-  });
+export const functionTime = async (thisfunction: () => void) => {
+  const { timeout } = useStore.getState().COMPUTER;
+
+  const waitUntilReady = async () => {
+    return new Promise<void>((resolve) => {
+      const check = () => {
+        const { isPaused, isStepMode, stepRequested, clearStepRequest } =
+          useStore.getState();
+
+        if (!isPaused || (isStepMode && stepRequested)) {
+          if (isStepMode && stepRequested) {
+            clearStepRequest(); // Consumes step
+          }
+          resolve();
+        } else {
+          setTimeout(check, 1000);
+        }
+      };
+      check();
+    });
+  };
+
+  await waitUntilReady();
+  await new Promise((resolve) => setTimeout(resolve, timeout)); // Respeta el delay
+  thisfunction();
 };
 
 export const getBinary = (number: string | number): string => {
