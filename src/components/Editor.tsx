@@ -68,7 +68,7 @@ export const CodeEditor = () => {
           case "ADD":
             {
               const operands = parameters.split(",");
-              if (operands.length < 2) {
+              if (operands.length != 2) {
                 Alert({
                   text: "Para el CODOP ADD se necesitan 2 operandos",
                 });
@@ -112,7 +112,7 @@ export const CodeEditor = () => {
           case "DEC":
             {
               const operands = parameters.split(",");
-              if (operands.length < 2) {
+              if (operands.length != 2) {
                 Alert({
                   text: "Para el CODOP ADD se necesitan 2 operandos",
                 });
@@ -156,7 +156,7 @@ export const CodeEditor = () => {
           case "DIV":
             {
               const operands = parameters.split(",");
-              if (operands.length < 2) {
+              if (operands.length != 2) {
                 Alert({
                   text: "Para el CODOP ADD se necesitan 2 operandos",
                 });
@@ -200,7 +200,7 @@ export const CodeEditor = () => {
           case "MUL":
             {
               const operands = parameters.split(",");
-              if (operands.length < 2) {
+              if (operands.length != 2) {
                 Alert({
                   text: "Para el CODOP ADD se necesitan 2 operandos",
                 });
@@ -245,7 +245,7 @@ export const CodeEditor = () => {
           case "JMP":
             {
               const operands = parameters.split(",");
-              if (operands.length < 2) {
+              if (operands.length != 1) {
                 Alert({
                   text: "Para el CODOP JMP se necesita 1 operando",
                 });
@@ -257,25 +257,122 @@ export const CodeEditor = () => {
             }
             break;
           case "JNZ":
-            createItem({ codop, type1: "FUNCTION", operand1: "function" });
-            break;
+            {
+              const operands = parameters.split(",");
+              if (operands.length != 1) {
+                Alert({
+                  text: "Para el CODOP JNZ se necesita 1 operando",
+                });
+                isSuccess = false;
+                break;
+              }
+              const value = operands[0];
+              createItem({ codop, type1: "FUNCTION", operand1: value });
+              break;
+            }
           case "JZ":
-            createItem({ codop, type1: "FUNCTION", operand1: "function" });
-            break;
+            {
+              const operands = parameters.split(",");
+              if (operands.length != 1) {
+                Alert({
+                  text: "Para el CODOP JZ se necesita 1 operando",
+                });
+                isSuccess = false;
+                break;
+              }
+              const value = operands[0];
+              createItem({ codop, type1: "FUNCTION", operand1: value });
+              break;
+            }
           case "LOAD":
             {
+              const operands = parameters.split(",");
+              if (operands.length != 2) {
+                Alert({
+                  text: "Para el CODOP LOAD se necesitan 2 operandos",
+                });
+                isSuccess = false;
+                break;
+              }
+              const register = operands[0];
+              const value = parseInt(operands[1]);
+              if (!registerOptions.includes(register)) {
+                Alert({
+                  text: "No se puede utilizar este registro",
+                });
+                isSuccess = false;
+                break;
+              }
+              if (value > 127 || value < -127) {
+                Alert({
+                  text: "El valor no puede ser mayor a 127 ni menor a -127",
+                });
+                isSuccess = false;
+                break
+              }
               createItem({
                 codop,
                 type1: "REGISTER",
-                operand1: "AL",
+                operand1: register,
                 type2: "NUMBER",
-                operand2: "0",
+                operand2: value.toString(),
               });
             }
             break;
           case "STORE":
-            createItem({ codop, type1: "NUMBER", operand1: "0" });
-            break;
+            {
+              const operands = parameters.split(",");
+              if (operands.length != 3) {
+                Alert({
+                  text: "Para el CODOP STORE se necesitan 3 operandos",
+                });
+                isSuccess = false;
+                break;
+              }
+              const value = parseInt(operands[0])
+              if (value < -127 || value > 127) {
+                Alert({
+                  text: "El valor no puede ser mayor a 127 ni menor a -127",
+                });
+                isSuccess = false;
+                break
+              }
+              const value1 = operands[1]
+              const value1Int = parseInt(value1)
+              if (Number.isNaN(value1Int)) {
+                // it's a register
+                if (!registerOptions.includes(value1)) {
+                  Alert({
+                    text: "No se puede utilizar este registro" + ": " + value,
+                  });
+                  isSuccess = false;
+                  break;
+                }
+                createItem({
+                  codop,
+                  operand1: value.toString(),
+                  operand2: value1,
+                  type2: "REGISTER",
+                });
+              } else {
+                if (value1Int > 127 || value1Int < -127) {
+                  Alert({
+                    text: "El valor no puede ser mayor a 127 ni menor a -127",
+                  });
+                  isSuccess = false;
+                  break
+                }
+                // it's a number
+                createItem({
+                  codop,
+                  operand1: value.toString(),
+                  operand2: value1Int.toString(),
+                });
+              }
+
+              createItem({ codop, type1: "NUMBER", operand1: "0" });
+              break;
+            }
           case "FUNC":
             {
               const operands = parameters.split(",");
