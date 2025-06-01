@@ -406,7 +406,7 @@ export function Item({ children, id }: ItemProps) {
         </DefaultItem>
       );
 
-    case "MALUMA":
+    case "FUNC":
       return (
         <DefaultItem className="border-amber-600 bg-amber-400" noCodop>
           <input

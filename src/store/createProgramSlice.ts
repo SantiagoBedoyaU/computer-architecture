@@ -46,7 +46,7 @@ export interface ProgramSlice {
   activeItem: ProgramItem | null;
   cancelProgram: boolean;
   isProgamRunning: boolean;
-  throwConfetti: boolean;
+  interruption: boolean;
   createItem: (props: CreateItem) => void;
   handleRemove: (id: string) => void;
   handleClear: () => void;
@@ -64,7 +64,7 @@ export interface ProgramSlice {
     field: "type1" | "type2",
     newValue: TypeOperand,
   ) => void;
-  setThrowConfetti: () => void;
+  setInterruption: () => void;
   updateDataItem: (props: UpdateDataItem) => void;
 }
 
@@ -74,7 +74,7 @@ const createProgramSlice: StateCreator<ProgramSlice> = (set) => ({
   activeItem: null,
   cancelProgram: true,
   isProgamRunning: false,
-  throwConfetti: false,
+  interruption: false,
   isPaused: true,
   setIsPaused: (isPaused) => set(() => ({ isPaused })),
 
@@ -115,7 +115,7 @@ const createProgramSlice: StateCreator<ProgramSlice> = (set) => ({
   },
 
   handleClear: () => {
-    set((state) => ({
+    set(() => ({
       items: [],
     }));
   },
@@ -199,8 +199,8 @@ const createProgramSlice: StateCreator<ProgramSlice> = (set) => ({
     });
   },
 
-  setThrowConfetti: () => {
-    set((state) => ({ throwConfetti: !state.throwConfetti }));
+  setInterruption: () => {
+    set((state) => ({ interruption: !state.interruption }));
   },
 
   updateDataItem: ({ operand1, operand2 }) => {

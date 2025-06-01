@@ -1,4 +1,4 @@
-export type Cycles = "FI" | "DI" | "CO" | "FO" | "EI" | "WO" | "INTERRUPTION";
+export type Cycles = "FI" | "DI" | "CO" | "FO" | "EI" | "WO" | "IN";
 
 export const cycleBgColors: Record<Cycles, string> = {
   FI: "bg-blue-500", // Azul
@@ -7,7 +7,7 @@ export const cycleBgColors: Record<Cycles, string> = {
   FO: "bg-teal-500", // Turquesa
   EI: "bg-purple-500", // Morado
   WO: "bg-orange-500", // Naranja
-  INTERRUPTION: "bg-red-500", // Rojo
+  IN: "bg-red-500", // Rojo
 };
 
 export const cycleStrokeColors: Record<Cycles, string> = {
@@ -17,5 +17,5 @@ export const cycleStrokeColors: Record<Cycles, string> = {
   FO: "rgb(20, 184, 166)", // Turquesa (text-teal-500)
   EI: "rgb(168, 85, 247)", // Morado (text-purple-500)
   WO: "rgb(249, 115, 22)", // Naranja (text-orange-500)
-  INTERRUPTION: "rgb(239, 68, 68)", // Rojo (text-red-500)
+  IN: "rgb(239, 68, 68)", // Rojo (text-red-500)
 };

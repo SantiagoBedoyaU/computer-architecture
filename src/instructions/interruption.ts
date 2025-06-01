@@ -8,12 +8,16 @@ import { Alert } from "../utils/swal";
 export const interruption = async () => {
   await functionTime(() => {
     // INTERRUPTION
-    useStore.getState().setCurrentCycle("INTERRUPTION");
+    useStore.getState().setCurrentCycle("IN");
   });
   if (!useStore.getState().cancelProgram) {
     useStore.getState().setPCValue(useStore.getState().items.length - 1);
     return;
   }
+  // 1- meter en memoria de programa instrucciones de interrupción
+  // lo que voy a hacer es que la interrupcion pedira dos numeros para sumarlos.
+  // se iluminara el modulo de I/O y se pedira el primer numero, luego se iluminara el modulo de I/O y se pedira el segundo numero.
+  // useStore.getState().createItem({});
 
   const address = useStore.getState().dataMemory.length;
 
@@ -243,7 +247,7 @@ export const interruption = async () => {
     return;
   }
 
-  useStore.getState().setThrowConfetti();
+  useStore.getState().setInterruption();
 
   return;
 };

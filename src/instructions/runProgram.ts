@@ -1,10 +1,10 @@
 import { InstruccionesControl } from "../interfaces/CODOP";
 import useStore from "../store/useStore";
 import { functionTime } from "../utils/actions";
+import { funcInstruction } from "./funcInstruction";
 import { interruption } from "./interruption";
 import { jumpsInstructions } from "./jumpsInstructions";
 import { loadInstruction } from "./loadInstruction";
-import { malumaInstruction } from "./malumaInstruction";
 import { moveInstruction } from "./moveInstruction";
 import { operationsInstructions } from "./operationsInstructions";
 import { storeInstruction } from "./storeInstruction";
@@ -180,8 +180,8 @@ export const run = async () => {
       case "STORE":
         await storeInstruction(codop, operand1, operand2, type2);
         break;
-      case "MALUMA":
-        await malumaInstruction();
+      case "FUNC":
+        await funcInstruction();
         break;
 
       default:
@@ -192,7 +192,7 @@ export const run = async () => {
       // verificando si hay INTERRUPTION
       useStore.getState().setComponents("UC", "UC");
     });
-    if (useStore.getState().throwConfetti) {
+    if (useStore.getState().interruption) {
       await interruption();
     }
 

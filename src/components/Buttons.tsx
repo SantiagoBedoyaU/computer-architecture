@@ -18,7 +18,7 @@ export const Buttons = () => {
     {
       title: "Control",
       items: [
-        { codop: "MALUMA", color: "border-amber-600 bg-amber-400" },
+        { codop: "func", color: "border-amber-600 bg-amber-400" },
         { codop: "JMP", color: "border-purple-600 bg-purple-400" },
         { codop: "JNZ", color: "border-teal-600 bg-teal-400" },
         { codop: "JZ", color: "border-pink-600 bg-pink-400" },
@@ -37,7 +37,7 @@ export const Buttons = () => {
 
   const handleCreate = (codop: keyof typeof CODOPS) => {
     switch (codop) {
-      case "MALUMA":
+      case "FUNC":
         {
           createItem({ codop, type1: "ASIGNFUNCTION", operand1: "function" });
         }

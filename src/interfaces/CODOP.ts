@@ -11,7 +11,7 @@ export enum CODOPS {
   JMP = "00001001",
   JNZ = "00001010",
   JZ = "00001011",
-  MALUMA = "00001100",
+  FUNC = "00001100",
 }
 
 // Instrucciones que tiene la UC para enviar al bus de control

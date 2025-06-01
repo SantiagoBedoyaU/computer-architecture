@@ -10,6 +10,7 @@ import "@xyflow/react/dist/style.css";
 import { useEffect } from "react";
 import {
   RiCloseFill,
+  RiErrorWarningFill,
   RiPauseFill,
   RiPlayLargeFill,
   RiSpeedFill,
@@ -60,7 +61,9 @@ export const Components = () => {
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
 
-  const cancelProgram = useStore((store) => store.cancelProgram);
+  const interruption = useStore((store) => store.interruption);
+  const setInterruption = useStore((store) => store.setInterruption);
+  // const cancelProgram = useStore((store) => store.cancelProgram);
   const COMPUTER = useStore((store) => store.COMPUTER);
   const { PC } = useStore((store) => store.COMPUTER);
   const dataMemory = useStore((store) => store.dataMemory);
@@ -312,6 +315,13 @@ export const Components = () => {
                     <RiSpeedFill />
                   </button>
 
+                  <button
+                    className="flex items-center justify-center gap-2 rounded-lg border-purple-800 bg-purple-600 px-4 py-2 text-white"
+                    onClick={() => setInterruption()}
+                    disabled={interruption}
+                  >
+                    <RiErrorWarningFill />
+                  </button>
                   <button
                     className="flex items-center justify-center gap-2 rounded-lg bg-red-500 px-4 py-2 text-white"
                     onClick={handleCancel}
