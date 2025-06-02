@@ -66,7 +66,7 @@ export interface ProgramSlice {
   ) => void;
   setInterruption: () => void;
   updateDataItem: (props: UpdateDataItem) => void;
-  deleteDataItem: (operand1: number) => void;
+  deleteDataItem: (operand1: DataMemory) => void;
 }
 
 const createProgramSlice: StateCreator<ProgramSlice> = (set) => ({
@@ -204,7 +204,23 @@ const createProgramSlice: StateCreator<ProgramSlice> = (set) => ({
     set((state) => ({ interruption: !state.interruption }));
   },
 
-  deleteDataItem: (operand1) => {},
+  deleteDataItem: (operand1) => {
+    set((state) => {
+      console.log("Deleting item with operand1:", operand1);
+      const updatedDataMemory = state.dataMemory.filter(
+        (item) => item.operand1 !== operand1,
+      );
+
+      if (updatedDataMemory.length === state.dataMemory.length) {
+        Alert({
+          text: `No se encontró ningún valor en la dirección de memoria: ${operand1}`,
+        });
+      } else {
+        console.log("Data Memory after deletion:", updatedDataMemory);
+      }
+      return { dataMemory: [...updatedDataMemory] };
+    });
+  },
   updateDataItem: ({ operand1, operand2 }) => {
     const newItem = {
       operand1,

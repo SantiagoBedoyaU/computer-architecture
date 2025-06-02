@@ -280,7 +280,7 @@ export const interruption = async () => {
   }
 
   useStore.getState().setInterruption();
-  useStore.getState().deleteDataItem(address);
+  useStore.getState().deleteDataItem(`${address}` as DataMemory);
 
   return;
 };

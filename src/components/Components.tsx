@@ -174,6 +174,7 @@ export const Components = () => {
   useEffect(() => {
     const NODE_HEIGHT = 50;
     const NODE_MARGIN = 10;
+    console.log("Data Memory:", dataMemory);
     const newNodes = dataMemory.map((item, index) => ({
       id: item.operand1,
       type: "AddressNode",
@@ -191,7 +192,15 @@ export const Components = () => {
       parentId: "DM",
     }));
 
-    setNodes((prevNodes) => [...prevNodes, ...newNodes]);
+    setNodes((prevNodes) => {
+      // Filtra los nodos que NO son de dataMemory
+      const nodesWithoutMemory = prevNodes.filter(
+        (node) => node.parentId !== "DM",
+      );
+
+      // Reemplaza todos los AddressNode con los nuevos
+      return [...nodesWithoutMemory, ...newNodes];
+    });
   }, [dataMemory, setNodes]);
 
   const handleOnClick = () => {
