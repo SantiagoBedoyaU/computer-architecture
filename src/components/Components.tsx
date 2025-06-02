@@ -18,7 +18,6 @@ import {
 import { initialEdges, initialNodes } from "../data/data";
 import { run } from "../instructions/runProgram";
 import { CODOPS } from "../interfaces/CODOP";
-import { cycleStrokeColors } from "../interfaces/Cycles";
 import { DataMemoryAddress } from "../interfaces/DataMemory";
 import { Register, RegisterAddress } from "../interfaces/RegisterBank";
 import useStore from "../store/useStore";
@@ -32,6 +31,8 @@ import {
   ComputerNode,
   CPUNode,
   FlagNode,
+  IOComponentNode,
+  IONode,
   MemoryNode,
   PCNode,
   PrincipalMemoryNode,
@@ -49,6 +50,8 @@ const nodeTypes = {
   ComputerNode,
   CPUNode,
   FlagNode,
+  IONode,
+  IOComponentNode,
   MemoryNode,
   PCNode,
   PrincipalMemoryNode,
@@ -156,13 +159,13 @@ export const Components = () => {
         style: {
           ...edge.style,
           strokeWidth: 4,
-          stroke: cycleStrokeColors[COMPUTER.currentCycle],
+          stroke: "black",
           animated: false,
           type: "default",
         },
         markerEnd: {
           type: MarkerType.ArrowClosed,
-          color: cycleStrokeColors[COMPUTER.currentCycle],
+          color: "black",
         },
       })),
     );
@@ -171,7 +174,6 @@ export const Components = () => {
   useEffect(() => {
     const NODE_HEIGHT = 50;
     const NODE_MARGIN = 10;
-
     const newNodes = dataMemory.map((item, index) => ({
       id: item.operand1,
       type: "AddressNode",
@@ -183,8 +185,9 @@ export const Components = () => {
         label: DataMemoryAddress[item.operand1],
         value: `${getBinary(item.operand2)}`,
         active: false,
+        visible: true,
       },
-      draggable: true,
+      draggable: false,
       parentId: "DM",
     }));
 
@@ -225,7 +228,6 @@ export const Components = () => {
     useStore.getState().setIsPaused(true); // Empieza pausado
     useStore.getState().setIsStepMode(true); // Modo paso a paso activo
     useStore.getState().clearStepRequest(); // Limpia pasos previos
-
     run();
   };
 

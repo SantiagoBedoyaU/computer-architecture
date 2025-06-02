@@ -3,6 +3,7 @@ import { Register } from "../interfaces/RegisterBank";
 import { TypeOperand } from "../store/createProgramSlice";
 import useStore from "../store/useStore";
 import { functionTime } from "../utils/actions";
+import { Alert } from "../utils/swal";
 
 // INSTRUCCIÓN ADD
 export const operationsInstructions = async (
@@ -153,13 +154,6 @@ export const operationsInstructions = async (
     return;
   }
 
-  // Actualizar el valor del operando1 con el reultado
-  useStore
-    .getState()
-    .setRegisterBankValue(
-      operand1 as Register,
-      useStore.getState().COMPUTER.ALU.result,
-    );
   // - Si el resultado es igual a cero, poner en true la flag de zero y se ilumina el PSW
   // - Si el resultado es mayor a 255, poner en true la flag de nan y se ilumina el PSW
   if (useStore.getState().COMPUTER.ALU.result === 0) {
@@ -182,11 +176,14 @@ export const operationsInstructions = async (
     useStore.getState().setPSWValue("nan", true);
     await functionTime(() => {
       useStore.getState().setComponents("ALU", "PSW");
+      Alert({
+        text: "Math Error",
+        icon: "error",
+        title: "Error de cálculo",
+      });
     });
-    if (!useStore.getState().cancelProgram) {
-      useStore.getState().setPCValue(useStore.getState().items.length - 1);
-      return;
-    }
+    useStore.getState().setPCValue(useStore.getState().items.length - 1);
+    return;
   } else {
     useStore.getState().setPSWValue("nan", false);
   }
@@ -195,6 +192,13 @@ export const operationsInstructions = async (
     // WO
     useStore.getState().setCurrentCycle("WO");
     useStore.getState().setComponents("ALU", operand1 as PCComponent);
+    // Actualizar el valor del operando1 con el reultado
+    useStore
+      .getState()
+      .setRegisterBankValue(
+        operand1 as Register,
+        useStore.getState().COMPUTER.ALU.result,
+      );
   });
   if (!useStore.getState().cancelProgram) {
     useStore.getState().setPCValue(useStore.getState().items.length - 1);

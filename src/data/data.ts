@@ -202,6 +202,40 @@ const CPU: Node[] = [
     extent: "parent",
   },
 ];
+const IO: Node[] = [
+  {
+    id: "IO",
+    type: "IONode",
+    position: { x: 0, y: 610 },
+    data: {
+      label: "Entrada/Salida",
+      active: false,
+      sourceHandleTop: 140,
+      sourceHandleSide: "right", // o "left"
+      targetHandleTop: 180,
+      targetHandleSide: "right",
+    },
+    draggable: false,
+  },
+  {
+    id: "KB",
+    type: "IOComponentNode",
+    position: { x: 40, y: 60 },
+    data: { label: "Teclado", active: false },
+    draggable: false,
+    parentId: "IO",
+    extent: "parent",
+  },
+  {
+    id: "Display",
+    type: "IOComponentNode",
+    position: { x: 40, y: 190 },
+    data: { label: "Monitor", active: false },
+    draggable: false,
+    parentId: "IO",
+    extent: "parent",
+  },
+];
 
 export const initialNodes: Node[] = [
   ...Memory,
@@ -251,6 +285,7 @@ export const initialNodes: Node[] = [
     },
     draggable: false,
   },
+  ...IO,
 ];
 
 export const initialEdges: Edge[] = [

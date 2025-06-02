@@ -1,4 +1,3 @@
-import { cycleBgColors } from "../interfaces/Cycles";
 import useStore from "../store/useStore";
 
 interface SettingsMenuProps {
@@ -13,9 +12,7 @@ export const SettingsMenu = ({ children }: SettingsMenuProps) => {
       <div className="flex flex-col items-center justify-between gap-2">
         {children}
         <div>
-          <div
-            className={`${cycleBgColors[currentCycle]} rounded-lg p-2 font-semibold text-white`}
-          >
+          <div className="rounded-lg bg-orange-500 p-2 font-semibold text-black">
             <p>
               <span className="font-semibold">{currentCycle}</span>
             </p>

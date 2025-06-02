@@ -1,6 +1,5 @@
 import { Handle, Position } from "@xyflow/react";
 import React from "react";
-import { cycleStrokeColors } from "../interfaces/Cycles";
 import useStore from "../store/useStore";
 import { getBinary } from "../utils/actions";
 
@@ -19,18 +18,17 @@ type ComputerNodeProps = {
 
 const globalNodeStyle: React.CSSProperties = {
   padding: "8px",
-  borderRadius: "5px",
   width: "100px",
   textAlign: "center",
 };
 
 export const CPUNode: React.FC<ComputerNodeProps> = ({ data }) => {
-  const { currentCycle } = useStore((store) => store.COMPUTER);
-  const { label, value, active } = data;
+  const { label, value } = data;
 
   const nodeStyle: React.CSSProperties = {
     ...globalNodeStyle,
-    border: `2px solid ${active ? cycleStrokeColors[currentCycle] : "gray"}`,
+    border: "2px solid black",
+    backgroundColor: "rgba(24, 178, 11, 0.20)",
     position: "relative",
     width: "480px",
     height: "600px",
@@ -44,14 +42,111 @@ export const CPUNode: React.FC<ComputerNodeProps> = ({ data }) => {
   );
 };
 
-export const PSWNode: React.FC<ComputerNodeProps> = ({ data }) => {
-  const { currentCycle } = useStore((store) => store.COMPUTER);
+export const IONode: React.FC<ComputerNodeProps> = ({ data }) => {
+  const {
+    label,
+    sourceHandleTop,
+    sourceHandleSide,
+    targetHandleTop,
+    targetHandleSide,
+  } = data;
+
+  const nodeStyle: React.CSSProperties = {
+    ...globalNodeStyle,
+    backgroundColor: "rgba(226, 30, 61, 0.2)",
+    border: "2px solid black",
+    position: "relative",
+    width: "480px",
+    height: "320px",
+  };
+
+  return (
+    <div style={nodeStyle}>
+      <strong>{label}</strong>
+
+      <Handle
+        type="source"
+        position={sourceHandleSide === "left" ? Position.Left : Position.Right}
+        id="sourceHandle"
+        style={{
+          top: sourceHandleTop ?? 500,
+          [sourceHandleSide ?? "right"]: "0px",
+        }}
+      />
+
+      {/* Target Handle dinámico */}
+      <Handle
+        type="target"
+        position={targetHandleSide === "left" ? Position.Left : Position.Right}
+        id="targetHandle"
+        style={{
+          top: targetHandleTop ?? 200,
+          [targetHandleSide ?? "left"]: "0px",
+        }}
+      />
+    </div>
+  );
+};
+
+export const IOComponentNode: React.FC<ComputerNodeProps> = ({ data }) => {
+  const { inputRequest, inputValue, outputValue } = useStore(
+    (store) => store.COMPUTER,
+  );
   const { label, active } = data;
 
   const nodeStyle: React.CSSProperties = {
     ...globalNodeStyle,
-    backgroundColor: `${active ? cycleStrokeColors[currentCycle] : "white"}`,
-    border: `2px solid ${active ? cycleStrokeColors[currentCycle] : "gray"}`,
+    backgroundColor: `${active ? "rgba(226, 30, 61, 0.5)" : "white"}`,
+    border: "2px solid black",
+    position: "relative",
+    width: "400px",
+    height: "100px",
+  };
+
+  return (
+    <div style={nodeStyle}>
+      <strong>{label}</strong>
+      {label === "Teclado" && (
+        <div className="flex flex-row justify-between gap-2 align-bottom">
+          <input
+            type="number"
+            className="w-full rounded border-2 border-black p-1"
+            value={inputValue}
+            onChange={(e) =>
+              useStore.getState().setInputValue(parseInt(e.target.value))
+            }
+            disabled={!inputRequest}
+          />
+          <button
+            className="rounded bg-blue-500 px-4 py-2 text-white"
+            onClick={() => {
+              useStore.getState().setInputValue(inputValue);
+              useStore.getState().setInputSend(true);
+            }}
+            disabled={!inputRequest}
+          >
+            Enviar
+          </button>
+        </div>
+      )}
+      {label === "Monitor" && (
+        <div>
+          <label>{outputValue}</label>
+        </div>
+      )}
+      <Handle type="source" position={Position.Right} id="sourceHandle" />
+      <Handle type="target" position={Position.Right} id="targetHandle" />
+    </div>
+  );
+};
+
+export const PSWNode: React.FC<ComputerNodeProps> = ({ data }) => {
+  const { label } = data;
+
+  const nodeStyle: React.CSSProperties = {
+    ...globalNodeStyle,
+    backgroundColor: "white",
+    border: "2px solid black",
     position: "relative",
     height: "160px",
   };
@@ -72,8 +167,8 @@ export const FlagNode: React.FC<ComputerNodeProps> = ({ data }) => {
   if (label === "ZERO") {
     const nodeStyle: React.CSSProperties = {
       ...globalNodeStyle,
-      backgroundColor: `2px solid ${PSW.zero ? "red" : "green"}`,
-      border: `2px solid ${PSW.zero ? "red" : "green"}`,
+      backgroundColor: ` ${PSW.zero ? "red" : "#00ff66"}`,
+      border: "2px solid black",
       position: "relative",
       width: "80px",
     };
@@ -87,8 +182,8 @@ export const FlagNode: React.FC<ComputerNodeProps> = ({ data }) => {
 
   const nodeStyle: React.CSSProperties = {
     ...globalNodeStyle,
-    backgroundColor: `2px solid ${PSW.nan ? "red" : "green"}`,
-    border: `2px solid ${PSW.nan ? "red" : "green"}`,
+    backgroundColor: ` ${PSW.nan ? "red" : "#00ff66"}`,
+    border: "2px solid black",
     position: "relative",
     width: "80px",
   };
@@ -101,11 +196,10 @@ export const FlagNode: React.FC<ComputerNodeProps> = ({ data }) => {
 };
 
 export const ALUComponent: React.FC<ComputerNodeProps> = ({ data }) => {
-  // const { currentCycle } = useStore((store) => store.COMPUTER);
   const { ALU } = useStore((store) => store.COMPUTER);
   const { label } = data;
 
-  if (label === "A") {
+  if (label === "A ---->") {
     const nodeStyle: React.CSSProperties = {
       ...globalNodeStyle,
       width: "170px",
@@ -123,7 +217,7 @@ export const ALUComponent: React.FC<ComputerNodeProps> = ({ data }) => {
     );
   }
 
-  if (label === "B") {
+  if (label === "B ---->") {
     const nodeStyle: React.CSSProperties = {
       ...globalNodeStyle,
       width: "170px",
@@ -157,14 +251,14 @@ export const ALUComponent: React.FC<ComputerNodeProps> = ({ data }) => {
 };
 
 export const ALUNode: React.FC<ComputerNodeProps> = ({ data }) => {
-  const { currentCycle } = useStore((store) => store.COMPUTER);
   const { label, active } = data;
 
   // Estilos para el contenedor principal de la ALU
   const aluContainerStyle: React.CSSProperties = {
-    border: `2px solid ${active ? cycleStrokeColors[currentCycle] : "gray"}`,
+    border: "2px solid black",
     position: "relative",
     width: "190px",
+    backgroundColor: `${active ? "rgba(24, 178, 11, 0.50)" : "white"}`,
     height: "200px",
   };
 
@@ -172,7 +266,6 @@ export const ALUNode: React.FC<ComputerNodeProps> = ({ data }) => {
   // const aluStyle: React.CSSProperties = {
   //   width: "100%",
   //   height: "100%",
-  //   backgroundColor: `${active ? cycleStrokeColors[currentCycle] : "white"}`,
   //   position: "relative",
   //   display: "flex",
   //   flexDirection: "column",
@@ -198,13 +291,12 @@ export const ALUNode: React.FC<ComputerNodeProps> = ({ data }) => {
 };
 
 export const RegisterNode: React.FC<ComputerNodeProps> = ({ data }) => {
-  const { currentCycle } = useStore((store) => store.COMPUTER);
   const { label, value, active } = data;
 
   const nodeStyle: React.CSSProperties = {
     ...globalNodeStyle,
-    border: `2px solid ${active ? cycleStrokeColors[currentCycle] : "gray"}`,
-    backgroundColor: `${active ? cycleStrokeColors[currentCycle] : "white"}`,
+    border: "2px solid black",
+    backgroundColor: `${active ? "rgba(24, 178, 11, 0.50)" : "white"}`,
     width: "140px",
     height: "50px",
     display: "flex",
@@ -224,15 +316,14 @@ export const RegisterNode: React.FC<ComputerNodeProps> = ({ data }) => {
 };
 
 export const AddressNode: React.FC<ComputerNodeProps> = ({ data }) => {
-  const { currentCycle } = useStore((store) => store.COMPUTER);
   const { label, value, active, visible } = data;
 
   if (!visible) return null;
 
   const nodeStyle: React.CSSProperties = {
     ...globalNodeStyle,
-    border: `2px solid ${active ? cycleStrokeColors[currentCycle] : "gray"}`,
-    backgroundColor: `${active ? cycleStrokeColors[currentCycle] : "white"}`,
+    border: "2px solid black",
+    backgroundColor: `${active ? "rgba(71, 158, 169, 0.50)" : "white"}`,
     width: "320px",
     height: "48px",
     display: "flex",
@@ -250,12 +341,12 @@ export const AddressNode: React.FC<ComputerNodeProps> = ({ data }) => {
 };
 
 export const RegisterBankNode: React.FC<ComputerNodeProps> = ({ data }) => {
-  const { currentCycle } = useStore((store) => store.COMPUTER);
-  const { label, value, active } = data;
+  const { label, value } = data;
 
   const nodeStyle: React.CSSProperties = {
     ...globalNodeStyle,
-    border: `2px solid ${active ? cycleStrokeColors[currentCycle] : "gray"}`,
+    backgroundColor: "white",
+    border: "2px solid black",
     width: "190px",
     height: "300px",
   };
@@ -269,12 +360,12 @@ export const RegisterBankNode: React.FC<ComputerNodeProps> = ({ data }) => {
 };
 
 export const MemoryNode: React.FC<ComputerNodeProps> = ({ data }) => {
-  const { currentCycle } = useStore((store) => store.COMPUTER);
-  const { label, value, active } = data;
+  const { label, value } = data;
 
   const nodeStyle: React.CSSProperties = {
     ...globalNodeStyle,
-    border: `2px solid ${active ? cycleStrokeColors[currentCycle] : "gray"}`,
+    backgroundColor: "white",
+    border: "2px solid black",
     width: "360px",
     height: "428px",
     overflowY: "auto",
@@ -292,12 +383,12 @@ export const MemoryNode: React.FC<ComputerNodeProps> = ({ data }) => {
 };
 
 export const PrincipalMemoryNode: React.FC<ComputerNodeProps> = ({ data }) => {
-  const { currentCycle } = useStore((store) => store.COMPUTER);
-  const { label, value, active } = data;
+  const { label, value } = data;
 
   const nodeStyle: React.CSSProperties = {
     ...globalNodeStyle,
-    border: `2px solid ${active ? cycleStrokeColors[currentCycle] : "gray"}`,
+    backgroundColor: "rgba(71, 158, 169, 0.25)",
+    border: "2px solid black",
     width: "420px",
     height: "940px",
   };
@@ -315,13 +406,12 @@ export const PrincipalMemoryNode: React.FC<ComputerNodeProps> = ({ data }) => {
 };
 
 export const ComputerNode: React.FC<ComputerNodeProps> = ({ data }) => {
-  const { currentCycle } = useStore((store) => store.COMPUTER);
   const { label, value, active } = data;
 
   const nodeStyle: React.CSSProperties = {
     ...globalNodeStyle,
-    backgroundColor: `${active ? cycleStrokeColors[currentCycle] : "white"}`,
-    border: `2px solid ${active ? cycleStrokeColors[currentCycle] : "gray"}`,
+    backgroundColor: `${active ? "rgba(24, 178, 11, 0.50)" : "white"}`,
+    border: "2px solid black",
   };
 
   return (
@@ -337,14 +427,13 @@ export const ComputerNode: React.FC<ComputerNodeProps> = ({ data }) => {
 };
 
 export const PCNode: React.FC<ComputerNodeProps> = ({ data }) => {
-  const { currentCycle } = useStore((store) => store.COMPUTER);
   const { PC } = useStore((store) => store.COMPUTER);
   const { label, active } = data;
 
   const nodeStyle: React.CSSProperties = {
     ...globalNodeStyle,
-    backgroundColor: `${active ? cycleStrokeColors[currentCycle] : "white"}`,
-    border: `2px solid ${active ? cycleStrokeColors[currentCycle] : "gray"}`,
+    backgroundColor: `${active ? "rgba(24, 178, 11, 0.50)" : "white"}`,
+    border: "2px solid black",
   };
 
   return (
@@ -360,7 +449,6 @@ export const PCNode: React.FC<ComputerNodeProps> = ({ data }) => {
 };
 
 export const BusNode: React.FC<ComputerNodeProps> = ({ data }) => {
-  const { currentCycle } = useStore((store) => store.COMPUTER);
   const {
     label,
     value,
@@ -373,8 +461,10 @@ export const BusNode: React.FC<ComputerNodeProps> = ({ data }) => {
 
   const nodeStyle: React.CSSProperties = {
     ...globalNodeStyle,
-    backgroundColor: active ? cycleStrokeColors[currentCycle] : "white",
-    border: `2px solid ${active ? cycleStrokeColors[currentCycle] : "gray"}`,
+    backgroundColor: active
+      ? "rgba(223, 206, 129, 0.82)"
+      : "rgba(223, 206, 129, 0.30)",
+    border: "2px solid black",
     width: "100px",
     height: "940px",
     display: "flex",

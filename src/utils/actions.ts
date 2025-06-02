@@ -15,7 +15,7 @@ export const functionTime = async (thisfunction: () => void) => {
           }
           resolve();
         } else {
-          setTimeout(check, 1000);
+          setTimeout(check, 500);
         }
       };
       check();
@@ -27,9 +27,28 @@ export const functionTime = async (thisfunction: () => void) => {
   thisfunction();
 };
 
+export const waitForInputSend = async (callback: () => void) => {
+  return new Promise<void>((resolve) => {
+    const check = () => {
+      const { inputSend } = useStore.getState().COMPUTER;
+
+      if (inputSend) {
+        callback();
+        resolve();
+      } else {
+        setTimeout(check, 300);
+      }
+    };
+    check();
+  });
+};
+
 export const getBinary = (number: string | number): string => {
   if (typeof number === "number") {
     return `${(number & 0xff).toString(2).padStart(8, "0")}`;
   }
   return `${(Number(number) & 0xff).toString(2).padStart(8, "0")}`;
+};
+export const getDecimal = (binary: string): number => {
+  return parseInt(binary, 2) & 0xff;
 };

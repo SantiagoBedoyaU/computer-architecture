@@ -66,6 +66,7 @@ export interface ProgramSlice {
   ) => void;
   setInterruption: () => void;
   updateDataItem: (props: UpdateDataItem) => void;
+  deleteDataItem: (operand1: number) => void;
 }
 
 const createProgramSlice: StateCreator<ProgramSlice> = (set) => ({
@@ -203,6 +204,7 @@ const createProgramSlice: StateCreator<ProgramSlice> = (set) => ({
     set((state) => ({ interruption: !state.interruption }));
   },
 
+  deleteDataItem: (operand1) => {},
   updateDataItem: ({ operand1, operand2 }) => {
     const newItem = {
       operand1,
@@ -212,6 +214,7 @@ const createProgramSlice: StateCreator<ProgramSlice> = (set) => ({
     set((state) => {
       // Si la lista está vacía, insertar directamente el nuevo elemento
       if (state.dataMemory.length === 0) {
+        console.log("Data Memory is empty, adding new item:", newItem);
         return { dataMemory: [newItem] };
       }
 
@@ -236,7 +239,7 @@ const createProgramSlice: StateCreator<ProgramSlice> = (set) => ({
       const normalizedDataMemory = updatedDataMemory.map(
         (item) => item || null,
       );
-
+      console.log("Data Memory normalized:", normalizedDataMemory);
       return { dataMemory: normalizedDataMemory };
     });
   },

@@ -3,6 +3,7 @@ import useStore from "../store/useStore";
 import { functionTime } from "../utils/actions";
 import { funcInstruction } from "./funcInstruction";
 import { interruption } from "./interruption";
+import { ioInstructions } from "./ioInstructions";
 import { jumpsInstructions } from "./jumpsInstructions";
 import { loadInstruction } from "./loadInstruction";
 import { moveInstruction } from "./moveInstruction";
@@ -26,7 +27,7 @@ export const run = async () => {
     }
 
     const instruction = instructions[useStore.getState().COMPUTER.PC];
-    const { id, codop, operand1, operand2, type2 } = instruction;
+    const { id, codop, operand1, type1, operand2, type2 } = instruction;
 
     await functionTime(() => {
       // FI - Fetch Instruction
@@ -182,6 +183,12 @@ export const run = async () => {
         break;
       case "FUNC":
         await funcInstruction();
+        break;
+      case "INPUT":
+        await ioInstructions(codop, operand1, type1);
+        break;
+      case "OUTPUT":
+        await ioInstructions(codop, operand1, type1);
         break;
 
       default:

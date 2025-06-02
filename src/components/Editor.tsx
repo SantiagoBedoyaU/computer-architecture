@@ -256,34 +256,32 @@ export const CodeEditor = () => {
               createItem({ codop, operand1: value });
             }
             break;
-          case "JNZ":
-            {
-              const operands = parameters.split(",");
-              if (operands.length != 1) {
-                Alert({
-                  text: "Para el CODOP JNZ se necesita 1 operando",
-                });
-                isSuccess = false;
-                break;
-              }
-              const value = operands[0];
-              createItem({ codop, type1: "FUNCTION", operand1: value });
+          case "JNZ": {
+            const operands = parameters.split(",");
+            if (operands.length != 1) {
+              Alert({
+                text: "Para el CODOP JNZ se necesita 1 operando",
+              });
+              isSuccess = false;
               break;
             }
-          case "JZ":
-            {
-              const operands = parameters.split(",");
-              if (operands.length != 1) {
-                Alert({
-                  text: "Para el CODOP JZ se necesita 1 operando",
-                });
-                isSuccess = false;
-                break;
-              }
-              const value = operands[0];
-              createItem({ codop, type1: "FUNCTION", operand1: value });
+            const value = operands[0];
+            createItem({ codop, type1: "FUNCTION", operand1: value });
+            break;
+          }
+          case "JZ": {
+            const operands = parameters.split(",");
+            if (operands.length != 1) {
+              Alert({
+                text: "Para el CODOP JZ se necesita 1 operando",
+              });
+              isSuccess = false;
               break;
             }
+            const value = operands[0];
+            createItem({ codop, type1: "FUNCTION", operand1: value });
+            break;
+          }
           case "LOAD":
             {
               const operands = parameters.split(",");
@@ -303,12 +301,12 @@ export const CodeEditor = () => {
                 isSuccess = false;
                 break;
               }
-              if (value > 127 || value < -127) {
+              if (value > 127 || value < 0) {
                 Alert({
-                  text: "El valor no puede ser mayor a 127 ni menor a -127",
+                  text: "El valor no puede ser mayor a 127 ni menor a 0",
                 });
                 isSuccess = false;
-                break
+                break;
               }
               createItem({
                 codop,
@@ -319,77 +317,158 @@ export const CodeEditor = () => {
               });
             }
             break;
-          case "STORE":
-            {
-              const operands = parameters.split(",");
-              if (operands.length != 3) {
-                Alert({
-                  text: "Para el CODOP STORE se necesitan 3 operandos",
-                });
-                isSuccess = false;
-                break;
-              }
-              const value = parseInt(operands[0])
-              if (value < -127 || value > 127) {
-                Alert({
-                  text: "El valor no puede ser mayor a 127 ni menor a -127",
-                });
-                isSuccess = false;
-                break
-              }
-              const value1 = operands[1]
-              const value1Int = parseInt(value1)
-              if (Number.isNaN(value1Int)) {
-                // it's a register
-                if (!registerOptions.includes(value1)) {
-                  Alert({
-                    text: "No se puede utilizar este registro" + ": " + value,
-                  });
-                  isSuccess = false;
-                  break;
-                }
-                createItem({
-                  codop,
-                  operand1: value.toString(),
-                  operand2: value1,
-                  type2: "REGISTER",
-                });
-              } else {
-                if (value1Int > 127 || value1Int < -127) {
-                  Alert({
-                    text: "El valor no puede ser mayor a 127 ni menor a -127",
-                  });
-                  isSuccess = false;
-                  break
-                }
-                // it's a number
-                createItem({
-                  codop,
-                  operand1: value.toString(),
-                  operand2: value1Int.toString(),
-                });
-              }
-
-              createItem({ codop, type1: "NUMBER", operand1: "0" });
+          case "STORE": {
+            const operands = parameters.split(",");
+            if (operands.length != 2) {
+              Alert({
+                text: "Para el CODOP STORE se necesitan 2 operandos",
+              });
+              isSuccess = false;
               break;
             }
-          case "FUNC":
-            {
-              const operands = parameters.split(",");
-              if (operands.length != 1) {
+            const value = parseInt(operands[0]);
+            if (value < 0 || value > 127) {
+              Alert({
+                text: "El valor no puede ser mayor a 127 ni menor a 0",
+              });
+              isSuccess = false;
+              break;
+            }
+            const value1 = operands[1];
+            const value1Int = parseInt(value1);
+            if (Number.isNaN(value1Int)) {
+              // it's a register
+              if (!registerOptions.includes(value1)) {
                 Alert({
-                  text: "Para el CODOP FNC se necesita un solo operando",
+                  text: "No se puede utilizar este registro" + ": " + value,
                 });
                 isSuccess = false;
                 break;
               }
               createItem({
                 codop,
-                type1: "ASIGNFUNCTION",
-                operand1: parameters,
+                operand1: value.toString(),
+                type1: "NUMBER",
+                operand2: value1,
+                type2: "REGISTER",
+              });
+            } else {
+              if (value1Int > 127 || value1Int < 0) {
+                Alert({
+                  text: "El valor no puede ser mayor a 127 ni menor a 0",
+                });
+                isSuccess = false;
+                break;
+              }
+              // it's a number
+              createItem({
+                codop,
+                operand1: value.toString(),
+                operand2: value1Int.toString(),
               });
             }
             break;
+          }
+          case "FUNC": {
+            const operands = parameters.split(",");
+            if (operands.length != 1) {
+              Alert({
+                text: "Para el CODOP FNC se necesita un solo operando",
+              });
+              isSuccess = false;
+              break;
+            }
+            createItem({
+              codop,
+              type1: "ASIGNFUNCTION",
+              operand1: parameters,
+            });
+            break;
+          }
+          case "INPUT": {
+            const operands = parameters.split(",");
+            if (operands.length != 1) {
+              Alert({
+                text: "Para el CODOP STORE se necesita un solo operando",
+              });
+              isSuccess = false;
+              break;
+            }
+            const value1 = parameters;
+            const value1Int = parseInt(value1);
+            if (Number.isNaN(value1Int)) {
+              // it's a register
+              if (!registerOptions.includes(value1)) {
+                Alert({
+                  text: "No se puede utilizar este registro" + ": " + value1,
+                });
+                isSuccess = false;
+                break;
+              }
+              createItem({
+                codop,
+                operand1: value1.toString(),
+                type1: "REGISTER",
+              });
+            } else {
+              if (value1Int > 127 || value1Int < 0) {
+                Alert({
+                  text: "El valor no puede ser mayor a 127 ni menor a 0",
+                });
+                isSuccess = false;
+                break;
+              }
+              // it's a number
+              createItem({
+                codop,
+                operand1: value1Int.toString(),
+                type1: "NUMBER",
+              });
+            }
+            break;
+          }
+          case "OUTPUT": {
+            const operands = parameters.split(",");
+            if (operands.length != 1) {
+              Alert({
+                text: "Para el CODOP STORE se necesita un solo operando",
+              });
+              isSuccess = false;
+              break;
+            }
+            const value1 = parameters;
+            const value1Int = parseInt(value1);
+            if (Number.isNaN(value1Int)) {
+              // it's a register
+              if (!registerOptions.includes(value1)) {
+                Alert({
+                  text: "No se puede utilizar este registro" + ": " + value1,
+                });
+                isSuccess = false;
+                break;
+              }
+              createItem({
+                codop,
+                operand1: value1.toString(),
+                type1: "REGISTER",
+              });
+            } else {
+              if (value1Int > 127 || value1Int < 0) {
+                Alert({
+                  text: "El valor no puede ser mayor a 127 ni menor a 0",
+                });
+                isSuccess = false;
+                break;
+              }
+              // it's a number
+              createItem({
+                codop,
+                operand1: value1Int.toString(),
+                type1: "NUMBER",
+              });
+            }
+            break;
+          }
           default:
             Alert({
               text: "CODOP no soportado",
@@ -460,16 +539,15 @@ export const CodeEditor = () => {
         width="35vw"
         defaultLanguage="asm"
         theme="light"
-        defaultValue={`MOV AL,4
-ADD AL,5
-MOV AL,4
-ADD AL,5
-MOV AL,4
-ADD AL,5
-MOV AL,4
-ADD AL,5
-MOV AL,4
-ADD AL,5`}
+        defaultValue={`INPUT 0
+LOAD AL,0
+MOV BL,1
+FUNC fac
+MUL BL,AL
+DEC AL,1
+JNZ fac
+STORE 1,BL
+OUTPUT 1`}
         onMount={handleEditorDidMount}
       />
 

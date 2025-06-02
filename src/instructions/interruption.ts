@@ -1,4 +1,4 @@
-import JSConfetti from "js-confetti";
+// import JSConfetti from "js-confetti";
 import { InstruccionesControl } from "../interfaces/CODOP";
 import { DataMemory } from "../interfaces/DataMemory";
 import useStore from "../store/useStore";
@@ -131,12 +131,44 @@ export const interruption = async () => {
     return;
   }
 
-  //! THOW CONFETTI
-  const jsConfetti = new JSConfetti();
-  await jsConfetti.addConfetti({
-    confettiRadius: 6,
-    confettiNumber: 300,
+  await functionTime(() => {
+    useStore.getState().setComponents("UC", "CB");
+    useStore.getState().setControlBusValue(InstruccionesControl.pedirNota);
   });
+  if (!useStore.getState().cancelProgram) {
+    useStore.getState().setPCValue(useStore.getState().items.length - 1);
+    return;
+  }
+  await functionTime(() => {
+    useStore.getState().setComponents("CB", "IO");
+  });
+  if (!useStore.getState().cancelProgram) {
+    useStore.getState().setPCValue(useStore.getState().items.length - 1);
+    return;
+  }
+  await functionTime(() => {
+    useStore.getState().setComponents("IO", "Display");
+    const mensajes_pal_profe = [
+      "Pasamos a Micros",
+      "Me tire Algoritmos",
+      "Saquenme del LANS",
+      "Gano el Once",
+      "Profe ponganos 5",
+      "Padre nuestro",
+    ];
+    useStore
+      .getState()
+      .setOutputValue(
+        mensajes_pal_profe[
+          Math.floor(Math.random() * mensajes_pal_profe.length)
+        ],
+      );
+  });
+
+  if (!useStore.getState().cancelProgram) {
+    useStore.getState().setPCValue(useStore.getState().items.length - 1);
+    return;
+  }
 
   await functionTime(() => {
     useStore.getState().setComponents("UC", "MAR");
@@ -248,6 +280,7 @@ export const interruption = async () => {
   }
 
   useStore.getState().setInterruption();
+  useStore.getState().deleteDataItem(address);
 
   return;
 };

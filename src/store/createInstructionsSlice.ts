@@ -26,6 +26,10 @@ export interface COMPUTER {
   currentCycle: Cycles;
   lastComponent: PCComponent | string;
   timeout: number;
+  inputSend: boolean;
+  outputValue: string;
+  inputRequest?: boolean; // Opcional, dependiendo de si se usa en el contexto
+  inputValue: number; // Opcional, dependiendo de si se usa en el contexto
 }
 
 // funciones y variables que se van a utilizar
@@ -49,6 +53,10 @@ export interface InstructionsSlice {
   setTimeout: (value: number) => void;
   setUCValue: (newUC: InstructionComp) => void;
   resetCOMPUTER: () => void;
+  setInputSend: (value: boolean) => void;
+  setRequestInput: (value: boolean) => void;
+  setInputValue: (value: number) => void; // Opcional, dependiendo de si se usa en el contexto
+  setOutputValue: (value: string) => void; // Opcional, dependiendo de si se usa en el contexto
 }
 
 // valores iniciales de las variables
@@ -90,7 +98,11 @@ const initialInstructions: COMPUTER = {
   currentComponent: "",
   currentCycle: "FI",
   lastComponent: "",
-  timeout: 500,
+  timeout: 100,
+  inputSend: false,
+  inputRequest: false,
+  inputValue: 0,
+  outputValue: "-------------",
 };
 
 const createInstructionsSlice: StateCreator<InstructionsSlice> = (set) => ({
@@ -125,13 +137,14 @@ const createInstructionsSlice: StateCreator<InstructionsSlice> = (set) => ({
     })),
 
   // Setear el valor del DataBus
-  setDataBusValue: (newDataBus) =>
+  setDataBusValue: (newDataBus) => {
     set((state) => ({
       COMPUTER: {
         ...state.COMPUTER,
         DB: newDataBus,
       },
-    })),
+    }));
+  },
 
   // Setear el valor del MAR
   setMARValue: (newMAR) =>
@@ -236,6 +249,22 @@ const createInstructionsSlice: StateCreator<InstructionsSlice> = (set) => ({
   resetCOMPUTER: () =>
     set((state) => ({
       COMPUTER: { ...initialInstructions, timeout: state.COMPUTER.timeout },
+    })),
+  setInputSend: (value) =>
+    set((state) => ({
+      COMPUTER: { ...state.COMPUTER, inputSend: value, inputRequest: false },
+    })),
+  setOutputValue: (value) =>
+    set((state) => ({
+      COMPUTER: { ...state.COMPUTER, outputValue: value },
+    })),
+  setRequestInput: (value) =>
+    set((state) => ({
+      COMPUTER: { ...state.COMPUTER, inputRequest: value },
+    })),
+  setInputValue: (value) =>
+    set((state) => ({
+      COMPUTER: { ...state.COMPUTER, inputValue: value },
     })),
 });
 

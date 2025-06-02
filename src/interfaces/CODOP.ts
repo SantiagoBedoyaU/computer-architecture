@@ -8,10 +8,12 @@ export enum CODOPS {
   DEC = "00000101",
   MUL = "00000110",
   DIV = "00000111",
-  JMP = "00001001",
-  JNZ = "00001010",
-  JZ = "00001011",
-  FUNC = "00001100",
+  JMP = "00001000",
+  JNZ = "00001001",
+  JZ = "00001010",
+  FUNC = "00001011",
+  INPUT = "00001100",
+  OUTPUT = "00001101",
 }
 
 // Instrucciones que tiene la UC para enviar al bus de control
@@ -19,4 +21,7 @@ export const InstruccionesControl = {
   GetInstruction: 0,
   GetDatum: 1,
   WriteMemory: 2,
+  input: 3,
+  output: 4,
+  pedirNota: 5,
 };
