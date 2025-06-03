@@ -489,48 +489,6 @@ export const CodeEditor = () => {
     }
   };
 
-  // const handleCreate = (codop: keyof typeof CODOPS) => {
-  //     switch (codop) {
-  //         case "func":
-  //             {
-  //                 createItem({ codop, type1: "ASIGNFUNCTION", operand1: "function" });
-  //             }
-  //             break;
-  //         case "JNZ":
-  //             {
-  //                 createItem({ codop, type1: "FUNCTION", operand1: "function" });
-  //             }
-  //             break;
-  //         case "JZ":
-  //             {
-  //                 createItem({ codop, type1: "FUNCTION", operand1: "function" });
-  //             }
-  //             break;
-  //         case "STORE":
-  //             {
-  //                 createItem({ codop, type1: "NUMBER", operand1: "0" });
-  //             }
-  //             break;
-  //         case "LOAD":
-  //             {
-  //                 createItem({
-  //                     codop,
-  //                     type1: "REGISTER",
-  //                     operand1: "AL",
-  //                     type2: "NUMBER",
-  //                     operand2: "0",
-  //                 });
-  //             }
-  //             break;
-
-  //         default:
-  //             {
-  //                 createItem({ codop });
-  //             }
-  //             break;
-  //     }
-  // };
-
   return (
     <div className="flex h-[100vh] w-fit flex-col items-center gap-2 bg-gray-300 py-2 text-black">
       <h1 className="text-xl font-bold">Instrucciones</h1>

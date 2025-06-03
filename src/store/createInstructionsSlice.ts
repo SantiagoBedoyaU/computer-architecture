@@ -98,7 +98,7 @@ const initialInstructions: COMPUTER = {
   currentComponent: "",
   currentCycle: "FI",
   lastComponent: "",
-  timeout: 100,
+  timeout: 500,
   inputSend: false,
   inputRequest: false,
   inputValue: 0,
